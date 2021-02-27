@@ -24,7 +24,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
-import android.os.Environment;
 
 import org.apache.cordova.LOG;
 
@@ -107,13 +106,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     private String generateTempFile() {
-      String tempFileName = null;
-      if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-          tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
-      } else {
-          tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
-      }
-      return tempFileName;
+      return "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
     }
 
     /**
@@ -184,13 +177,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void moveFile(String file) {
         /* this is a hack to save the file as the specified name */
 
-        if (!file.startsWith("/")) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
-            } else {
-                file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
-            }
-        }
+        if (!file.startsWith("/"))
+            file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
 
         int size = this.tempFiles.size();
         LOG.d(LOG_TAG, "size = " + size);
@@ -697,9 +685,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     this.player.setDataSource(fileInputStream.getFD());
                     fileInputStream.close();
                 }
-                else {
-                    this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
-                }
+                else
+                    throw new IOException("Cannot find Audio File: " + fp)
             }
                 this.setState(STATE.MEDIA_STARTING);
                 this.player.setOnPreparedListener(this);
