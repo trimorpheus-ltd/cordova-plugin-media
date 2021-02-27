@@ -686,7 +686,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     fileInputStream.close();
                 }
                 else
-                    throw new IOException("Cannot find Audio File: " + fp)
+                    throw new IOException("Cannot find Audio File: " + fp);
             }
                 this.setState(STATE.MEDIA_STARTING);
                 this.player.setOnPreparedListener(this);
